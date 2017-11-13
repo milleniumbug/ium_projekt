@@ -30,5 +30,11 @@ namespace Api.Models
 			ShopName = other.ShopName;
 			Name = other.Name;
 		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return $"{nameof(Id)}: {Id}, {nameof(Amount)}: {Amount}, {nameof(Name)}: {Name}, {nameof(ShopName)}: {ShopName}, {nameof(Price)}: {Price}";
+		}
 	}
 }

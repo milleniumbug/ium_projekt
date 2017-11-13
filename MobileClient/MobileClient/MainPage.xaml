@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="MobileClient.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:MobileClient.Converters;assembly=MobileClient.Android"
+    xmlns:local="clr-namespace:MobileClient"
+    xmlns:viewModels="clr-namespace:MobileClient.ViewModels;assembly=MobileClient.Android">
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListView
+                Grid.Row="3"
+                ItemsSource="{Binding Products}"
+                SelectedItem="{Binding SelectedProduct}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding ., Converter={x:Static converters:ProductToStringConverter.Default}}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Clicked="DecreaseProduct"
+                    Text="-" />
+                <Button
+                    Grid.Column="1"
+                    Clicked="IncreaseProduct"
+                    Text="+" />
+                <Button
+                    Grid.Column="2"
+                    Clicked="RemoveProduct"
+                    Text="X" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Entry
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Placeholder="Product name"
+                    Text="{Binding Name}" />
+                <Entry
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Placeholder="Price"
+                    Text="{Binding Price}" />
+                <Entry
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Placeholder="Shop name"
+                    Text="{Binding ShopName}" />
+                <Button
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Grid.Column="1"
+                    Clicked="AddProduct"
+                    Text="Add" />
+            </Grid>
+            <Button
+                Grid.Row="0"
+                Clicked="LoginButtonClicked"
+                Text="{Binding IsLoggedIn, Converter={x:Static converters:BoolToLoggedInConverter.Default}}" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

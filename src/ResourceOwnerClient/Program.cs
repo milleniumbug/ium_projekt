@@ -19,117 +19,27 @@ namespace ConsoleClient
 
 		private static async Task MainAsync()
 		{
-			// discover endpoints from metadata
-			var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
-			if(disco.IsError)
+			var client = await ApiClientLib.ApiClient.Create("brockallen@gmail.com", "Pass123$");
+			var p1 = await client.Add(new Product
 			{
-				Console.WriteLine(disco.Error);
-				return;
-			}
-
-			// request token
-			var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
-			var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("brockallen@gmail.com", "Pass123$", "api1");
-
-			if(tokenResponse.IsError)
+				Amount = 0,
+				Name = "Mleko",
+				ShopName = "Kerfur",
+				Price = 2.5M
+			});
+			var p2 = await client.Add(new Product
 			{
-				Console.WriteLine(tokenResponse.Error);
-				return;
-			}
-
-			Console.WriteLine(tokenResponse.Json);
-			Console.WriteLine("\n\n");
-
-			// call api
-			var client = new HttpClient();
-			client.SetBearerToken(tokenResponse.AccessToken);
-			long? id = null;
+				Amount = 0,
+				Name = "Kartofle",
+				ShopName = "Biedronka",
+				Price = 1.5M
+			});
+			await client.IncreaseAmount(p2, 4);
+			await client.Delete(p1);
+			var products = await client.GetAll();
+			foreach(var p in products)
 			{
-				var response = await client.PostAsync("http://localhost:5001/products", new StringContent(
-					JsonConvert.SerializeObject(new Product
-					{
-						Amount = 0,
-						Price = 42.4M,
-						ShopName = "Kerfur",
-						Name = "Mleko"
-					}),
-					Encoding.UTF8,
-					"application/json"));
-				if(!response.IsSuccessStatusCode)
-				{
-					Console.WriteLine(response.StatusCode);
-				}
-				else
-				{
-					var content = await response.Content.ReadAsStringAsync();
-					var product = JsonConvert.DeserializeObject<Product>(content);
-					id = product.Id;
-				}
-			}
-			{
-				var response = await client.PatchAsync($"http://localhost:5001/products/{id.Value}", new StringContent(
-					JsonConvert.SerializeObject(new List<ProductPatch>
-					{
-						new ProductPatch
-						{
-							Operation = ProductPatch.OperationType.Increase,
-							What = ProductPatch.TargetField.Amount,
-							Value = 4
-						}
-					}),
-					Encoding.UTF8,
-					"application/json"));
-				if(!response.IsSuccessStatusCode)
-				{
-					Console.WriteLine(response.StatusCode);
-				}
-				else
-				{
-					var content = await response.Content.ReadAsStringAsync();
-					var product = JsonConvert.DeserializeObject<Product>(content);
-				}
-			}
-			id = null;
-			{
-				var response = await client.PostAsync("http://localhost:5001/products", new StringContent(
-					JsonConvert.SerializeObject(new Product
-					{
-						Amount = 0,
-						Price = 1.4M,
-						ShopName = "Biedronka",
-						Name = "Kartofle"
-					}),
-					Encoding.UTF8,
-					"application/json"));
-				if(!response.IsSuccessStatusCode)
-				{
-					Console.WriteLine(response.StatusCode);
-				}
-				else
-				{
-					var content = await response.Content.ReadAsStringAsync();
-					var product = JsonConvert.DeserializeObject<Product>(content);
-					id = product.Id;
-				}
-			}
-			{
-				var response = await client.DeleteAsync($"http://localhost:5001/products/{id.Value}");
-				if(!response.IsSuccessStatusCode)
-				{
-					Console.WriteLine(response.StatusCode);
-				}
-			}
-			{
-				var response = await client.GetAsync("http://localhost:5001/products");
-				if(!response.IsSuccessStatusCode)
-				{
-					Console.WriteLine(response.StatusCode);
-				}
-				else
-				{
-					var content = await response.Content.ReadAsStringAsync();
-					Console.WriteLine(JArray.Parse(content));
-				}
+				Console.WriteLine(p);
 			}
 		}
 	}
