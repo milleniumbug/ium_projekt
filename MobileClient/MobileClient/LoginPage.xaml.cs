@@ -12,6 +12,8 @@ namespace MobileClient
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LoginPage : ContentPage
 	{
+		public static LoginViewModel BindingContextDummyInstance => null;
+
 		public LoginPage()
 		{
 			InitializeComponent ();

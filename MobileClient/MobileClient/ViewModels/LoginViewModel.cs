@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MobileClient.ViewModels
 {
-	class LoginViewModel : INotifyPropertyChanged
+	public class LoginViewModel : INotifyPropertyChanged
 	{
 		private readonly Action<string, string> loginCallback;
 
