@@ -20,7 +20,7 @@ namespace Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<AppDbContext>(options =>
-		        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+		        options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
 			services.AddMvcCore()
                 .AddAuthorization()
@@ -29,12 +29,12 @@ namespace Api
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = "http://localhost:5000";
+                    options.Authority = Configuration["openIdAuthority"];
                     options.RequireHttpsMetadata = false;
 
                     options.ApiName = "api1";
                 });
-        }
+		}
 
         public void Configure(IApplicationBuilder app)
         {

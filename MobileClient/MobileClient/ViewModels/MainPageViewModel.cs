@@ -15,6 +15,10 @@ namespace MobileClient.ViewModels
 	{
 		private Product selectedProduct;
 
+		private string openIdAuthority;
+
+		private string appServerAddress;
+
 		public Product SelectedProduct
 		{
 			get => selectedProduct;
@@ -74,6 +78,19 @@ namespace MobileClient.ViewModels
 		}
 
 		private IApiClient apiClient;
+
+		public MainPageViewModel() :
+			this(Configuration.AppServerAddres, Configuration.OpenIdAuthority)
+		{
+			
+		}
+
+		public MainPageViewModel(string appServerAddress, string openIdAuthority)
+		{
+			this.appServerAddress = appServerAddress;
+			this.openIdAuthority = openIdAuthority;
+		}
+
 		private IApiClient ApiClient
 		{
 			get => apiClient;
@@ -101,7 +118,7 @@ namespace MobileClient.ViewModels
 
 		public async void DoLogin(string login, string password)
 		{
-			apiClient = await ApiClientLib.MockApiClient.Create(login, password, "http://10.0.2.2:5001", "https://10.0.2.2:44305");
+			apiClient = await ApiClientLib.MockApiClient.Create(login, password, appServerAddress, openIdAuthority);
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{

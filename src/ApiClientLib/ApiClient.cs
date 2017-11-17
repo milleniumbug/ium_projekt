@@ -103,7 +103,8 @@ namespace ApiClientLib
 		{
 			var client = new ApiClient();
 
-			var disco = await DiscoveryClient.GetAsync(openIdAddress);
+			var discoveryClient = new DiscoveryClient(openIdAddress);
+			var disco = await discoveryClient.GetAsync();
 			if(disco.IsError)
 			{
 				throw new ConnectionErrorException("Error on discovery");
