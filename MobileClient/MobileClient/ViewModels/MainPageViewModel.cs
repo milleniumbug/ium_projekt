@@ -33,6 +33,21 @@ namespace MobileClient.ViewModels
 			}
 		}
 
+		private int amountDelta;
+
+		public int AmountDelta
+		{
+			get => amountDelta;
+			set
+			{
+				if(amountDelta != value)
+				{
+					amountDelta = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
 		private string shopName;
 
 		public string ShopName
@@ -147,7 +162,7 @@ namespace MobileClient.ViewModels
 			if(SelectedProduct == null)
 				return;
 			var product = SelectedProduct;
-			var newProduct = await ApiClient.DecreaseAmount(product, 1);
+			var newProduct = await ApiClient.DecreaseAmount(product, amountDelta);
 			Products[Products.IndexOf(product)] = newProduct;
 			SelectedProduct = newProduct;
 		}
@@ -157,7 +172,7 @@ namespace MobileClient.ViewModels
 			if(SelectedProduct == null)
 				return;
 			var product = SelectedProduct;
-			var newProduct = await ApiClient.IncreaseAmount(product, 1);
+			var newProduct = await ApiClient.IncreaseAmount(product, amountDelta);
 			Products[Products.IndexOf(product)] = newProduct;
 			SelectedProduct = newProduct;
 		}

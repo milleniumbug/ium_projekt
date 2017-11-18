@@ -59,6 +59,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Button
                     Grid.Column="0"
@@ -68,8 +69,12 @@
                     Grid.Column="1"
                     Clicked="IncreaseProduct"
                     Text="+" />
-                <Button
+                <Entry
                     Grid.Column="2"
+                    Placeholder="How many"
+                    Text="{Binding AmountDelta}" />
+                <Button
+                    Grid.Column="3"
                     Clicked="RemoveProduct"
                     Text="X" />
             </Grid>
