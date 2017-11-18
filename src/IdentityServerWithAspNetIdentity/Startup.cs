@@ -39,7 +39,10 @@ namespace IdentityServerWithAspNetIdentity
 			services.AddMvc();
 
 			// configure identity server with in-memory stores, keys, clients and scopes
-			services.AddIdentityServer()
+			services.AddIdentityServer(options =>
+				{
+					options.PublicOrigin = Configuration["openIdAuthority"];
+				})
 				.AddDeveloperSigningCredential()
 				.AddInMemoryPersistedGrants()
 				.AddInMemoryIdentityResources(Config.GetIdentityResources())

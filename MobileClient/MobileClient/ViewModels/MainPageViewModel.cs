@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Api.Models;
 using ApiClientLib;
@@ -80,7 +81,7 @@ namespace MobileClient.ViewModels
 		private IApiClient apiClient;
 
 		public MainPageViewModel() :
-			this(Configuration.AppServerAddres, Configuration.OpenIdAuthority)
+			this(Configuration.AppServerAddress, Configuration.OpenIdAuthority)
 		{
 			
 		}
@@ -116,9 +117,9 @@ namespace MobileClient.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public async void DoLogin(string login, string password)
+		public async Task DoLogin(string login, string password)
 		{
-			apiClient = await ApiClientLib.MockApiClient.Create(login, password, appServerAddress, openIdAuthority);
+			apiClient = await ApiClientLib.ApiClient.Create(login, password, appServerAddress, openIdAuthority);
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{

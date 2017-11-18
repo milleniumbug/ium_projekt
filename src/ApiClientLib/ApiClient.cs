@@ -107,12 +107,17 @@ namespace ApiClientLib
 			var disco = await discoveryClient.GetAsync();
 			if(disco.IsError)
 			{
-				throw new ConnectionErrorException("Error on discovery");
+				throw new ConnectionErrorException($"Error on OpenID discovery: {disco.Error}");
 			}
 
 			// request token
 			var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
 			var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(login, password, "api1");
+
+			if(tokenResponse.IsError)
+			{
+				throw new ConnectionErrorException($"Error on OpenID login: {tokenResponse.Error}");
+			}
 
 			var httpClient = new HttpClient();
 			httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);

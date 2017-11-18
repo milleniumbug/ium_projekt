@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MobileClient.ViewModels
 {
 	public class LoginViewModel : INotifyPropertyChanged
 	{
-		private readonly Action<string, string> loginCallback;
+		private readonly Func<string, string, Task> loginCallback;
 
-		public void IssueALogin()
+		public Task IssueALogin()
 		{
-			loginCallback(login, password);
+			return loginCallback(login, password);
 		}
 
-		public LoginViewModel(Action<string, string> loginCallback)
+		public LoginViewModel(Func<string, string, Task> loginCallback)
 		{
 			this.loginCallback = loginCallback;
 		}

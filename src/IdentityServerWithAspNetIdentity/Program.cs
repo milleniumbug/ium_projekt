@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -10,18 +11,22 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServerWithAspNetIdentity
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.Title = "IdentityServerWithAspNetIdentity";
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			Console.Title = "IdentityServerWithAspNetIdentity";
 
-            BuildWebHost(args).Run();
-        }
+			BuildWebHost(args).Run();
+		}
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
-    }
+		public static IWebHost BuildWebHost(string[] args) =>
+			WebHost.CreateDefaultBuilder(args)
+				.UseStartup<Startup>()
+				.UseKestrel(options =>
+				{
+					options.Listen(IPAddress.Loopback, 5500);
+				})
+				.Build();
+	}
 }

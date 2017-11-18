@@ -16,14 +16,21 @@ namespace MobileClient
 
 		public LoginPage()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 		}
 
-		private void OnLoginButtonClicked(object sender, EventArgs e)
+		private async void OnLoginButtonClicked(object sender, EventArgs e)
 		{
-			var vm = (LoginViewModel) BindingContext;
-			vm.IssueALogin();
-			Navigation.PopModalAsync();
+			var vm = (LoginViewModel)BindingContext;
+			try
+			{
+				await vm.IssueALogin();
+				await Navigation.PopModalAsync();
+			}
+			catch(Exception ex)
+			{
+				await DisplayAlert("Invalid Login", $"Login failed: {ex.Message}", "OK");
+			}
 		}
 	}
 }

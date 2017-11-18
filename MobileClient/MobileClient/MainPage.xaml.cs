@@ -23,7 +23,7 @@ namespace MobileClient
 		{
 			var page = new LoginPage
 			{
-				BindingContext = new LoginViewModel((login, password) => vm.DoLogin(login, password))
+				BindingContext = new LoginViewModel(async (login, password) => await vm.DoLogin(login, password))
 			};
 			Navigation.PushModalAsync(page);
 		}
