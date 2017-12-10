@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2408EC7B-2E06-46A5-B6AC-D4E985E30CBB}"
 EndProject
@@ -23,7 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileClient.Android", "Mob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileClient.iOS", "MobileClient\MobileClient.iOS\MobileClient.iOS.csproj", "{190ED57C-9A75-40EF-A258-E45E5EFA3D02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClientLib", "src\ApiClientLib\ApiClientLib.csproj", "{50C88052-2CC7-4FB4-9E1E-368B0CA830DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiClientLib", "src\ApiClientLib\ApiClientLib.csproj", "{50C88052-2CC7-4FB4-9E1E-368B0CA830DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -222,6 +224,30 @@ Global
 		{50C88052-2CC7-4FB4-9E1E-368B0CA830DD}.Release|iPhone.Build.0 = Release|Any CPU
 		{50C88052-2CC7-4FB4-9E1E-368B0CA830DD}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{50C88052-2CC7-4FB4-9E1E-368B0CA830DD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Ad-Hoc|iPhoneSimulator.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.AppStore|iPhoneSimulator.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|iPhone.Build.0 = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -236,6 +262,7 @@ Global
 		{43950AC2-0AD3-49BC-8DA3-63C42DA1F1FA} = {BABF1C97-CB5C-4AC5-81C6-6A81B0D45E27}
 		{190ED57C-9A75-40EF-A258-E45E5EFA3D02} = {BABF1C97-CB5C-4AC5-81C6-6A81B0D45E27}
 		{50C88052-2CC7-4FB4-9E1E-368B0CA830DD} = {2408EC7B-2E06-46A5-B6AC-D4E985E30CBB}
+		{14AD2C77-A2A7-4CAC-AA2C-6DD5B38F59F2} = {BABF1C97-CB5C-4AC5-81C6-6A81B0D45E27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCF2AA98-1744-46FE-94B5-D76E6E4A54A6}

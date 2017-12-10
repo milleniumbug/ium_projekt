@@ -188,6 +188,11 @@ namespace ApiClientLib
 			string offlineStoragePathBase,
 			ConnectionSettings conn)
 		{
+			return Create(offlineStoragePathBase, conn, () => ApiClient.Create(conn));
+		}
+
+		public static Task<SynchronizingApiClient> Create(string offlineStoragePathBase, ConnectionSettings conn, Func<Task<IApiClient>> onlineClientFactory)
+		{
 			if(!IsLocalStorageValid(offlineStoragePathBase, conn))
 			{
 				InvalidateLocalStorage(offlineStoragePathBase);
@@ -195,7 +200,7 @@ namespace ApiClientLib
 			var client = new SynchronizingApiClient
 			{
 				offlineStoragePathBase = offlineStoragePathBase,
-				createOnlineClient = () => ApiClient.Create(conn),
+				createOnlineClient = onlineClientFactory,
 				deltas = LoadDeltas(offlineStoragePathBase),
 				products = LoadProducts(offlineStoragePathBase)
 			};
@@ -223,7 +228,7 @@ namespace ApiClientLib
 			}
 		}
 
-		private static void InvalidateLocalStorage(string offlineStoragePathBase)
+		public static void InvalidateLocalStorage(string offlineStoragePathBase)
 		{
 			File.Delete(Path.Combine(offlineStoragePathBase, productsFilenameComponent));
 			File.Delete(Path.Combine(offlineStoragePathBase, deltaFilenameComponent));
