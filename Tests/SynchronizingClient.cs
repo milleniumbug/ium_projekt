@@ -64,6 +64,49 @@ namespace Tests
 			await AssertEqualContent(onlineClient, offlineClient);
 		}
 
+		[Test]
+		public async Task BasicNoServerState()
+		{
+			await offlineClient.Add(p1);
+			await offlineClient.Synchronize();
+			await AssertEqualContent(onlineClient, offlineClient);
+		}
+
+		[Test]
+		public async Task RemovalOnOneAndUpdateOnAnother()
+		{
+			await onlineClient.Add(p1);
+			await offlineClient.Synchronize();
+			await offlineClient2.Synchronize();
+			var pcl1 = (await offlineClient.GetAll()).First();
+			await offlineClient.Delete(pcl1);
+			var pcl2 = (await offlineClient2.GetAll()).First();
+			await offlineClient2.IncreaseAmount(pcl2, 5);
+			await offlineClient.Synchronize();
+			await offlineClient2.Synchronize();
+			await AssertEqualContent(onlineClient, offlineClient);
+			await AssertEqualContent(onlineClient, offlineClient2);
+			await AssertEqualContent(offlineClient, offlineClient2);
+		}
+
+		[Test]
+		public async Task UpdateOnBoth()
+		{
+			await onlineClient.Add(p1);
+			await offlineClient.Synchronize();
+			await offlineClient2.Synchronize();
+			var pcl1 = (await offlineClient.GetAll()).First();
+			await offlineClient.IncreaseAmount(pcl1, 5);
+			var pcl2 = (await offlineClient2.GetAll()).First();
+			await offlineClient2.IncreaseAmount(pcl2, 5);
+			await offlineClient.Synchronize();
+			await offlineClient2.Synchronize();
+			await AssertEqualContent(onlineClient, offlineClient);
+			await AssertEqualContent(onlineClient, offlineClient2);
+			await AssertEqualContent(offlineClient, offlineClient2);
+			Assert.AreEqual(11, (await onlineClient.GetAll()).First().Amount);
+		}
+
 		private async Task AssertEqualContent(IApiClient expectedClient, IApiClient actualClient)
 		{
 			CollectionAssert.AreEqual(

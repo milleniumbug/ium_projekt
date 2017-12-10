@@ -43,6 +43,8 @@ namespace ApiClientLib
 		public Task<Product> IncreaseAmount(Product product, int howMuch)
 		{
 			var p = l.FirstOrDefault(pr => pr.Id == product.Id);
+			if(p == null)
+				throw new ElementNotFound();
 			p.Amount += howMuch;
 			return Task.FromResult(new Product(p));
 		}
@@ -51,6 +53,8 @@ namespace ApiClientLib
 		public Task<Product> DecreaseAmount(Product product, int howMuch)
 		{
 			var p = l.FirstOrDefault(pr => pr.Id == product.Id);
+			if(p == null)
+				throw new ElementNotFound();
 			p.Amount -= howMuch;
 			return Task.FromResult(new Product(p));
 		}
