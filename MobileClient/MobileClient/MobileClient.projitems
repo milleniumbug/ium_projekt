@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserIdentity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainPageViewModel.cs" />
   </ItemGroup>

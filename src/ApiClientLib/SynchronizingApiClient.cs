@@ -12,6 +12,11 @@ namespace ApiClientLib
 {
 	public class SynchronizingApiClient : IApiClient
 	{
+		private class UserIdentity
+		{
+			public string Login { get; set; }
+		}
+
 		private enum ServerState
 		{
 			Exists,
@@ -42,6 +47,7 @@ namespace ApiClientLib
 		private static readonly string deltaFilenameComponent = "deltas.json";
 		private static readonly string productsFilenameComponent = "products.json";
 		public string offlineStoragePathBase;
+		private static readonly string userIdentityFilenameComponent = "user.json";
 
 		private SynchronizingApiClient()
 		{
@@ -182,6 +188,10 @@ namespace ApiClientLib
 			string offlineStoragePathBase,
 			ConnectionSettings conn)
 		{
+			if(!IsLocalStorageValid(offlineStoragePathBase, conn))
+			{
+				InvalidateLocalStorage(offlineStoragePathBase);
+			}
 			var client = new SynchronizingApiClient
 			{
 				offlineStoragePathBase = offlineStoragePathBase,
@@ -191,8 +201,33 @@ namespace ApiClientLib
 			};
 			var id = client.products.Select(p => p.Value.Product.Id).DefaultIfEmpty(0).Min() - 1;
 			client.localId = Math.Min(id, -1);
+			File.WriteAllText(
+				Path.Combine(offlineStoragePathBase, userIdentityFilenameComponent),
+				JsonConvert.SerializeObject(new UserIdentity{Login = conn.Login}, jsonSerializerSettings),
+				Encoding.UTF8);
 
 			return Task.FromResult(client);
+		}
+
+		private static bool IsLocalStorageValid(string offlineStoragePathBase, ConnectionSettings conn)
+		{
+			try
+			{
+				var userIdentity = JsonConvert.DeserializeObject<UserIdentity>(
+					File.ReadAllText(Path.Combine(offlineStoragePathBase, userIdentityFilenameComponent)));
+				return userIdentity.Login == conn.Login;
+			}
+			catch(FileNotFoundException)
+			{
+				return false;
+			}
+		}
+
+		private static void InvalidateLocalStorage(string offlineStoragePathBase)
+		{
+			File.Delete(Path.Combine(offlineStoragePathBase, productsFilenameComponent));
+			File.Delete(Path.Combine(offlineStoragePathBase, deltaFilenameComponent));
+			File.Delete(Path.Combine(offlineStoragePathBase, userIdentityFilenameComponent));
 		}
 
 		private static Dictionary<long, ClientProduct> LoadProducts(string offlineStoragePathBase)

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Api.Models;
 using ApiClientLib;
+using MobileClient.Models;
+using Newtonsoft.Json;
 using Xamarin.Forms;
 
 namespace MobileClient.ViewModels
@@ -94,7 +97,7 @@ namespace MobileClient.ViewModels
 		}
 
 		private IApiClient apiClient;
-		private readonly string offlineStorageBasePath;
+		public string OfflineStorageBasePath { get; }
 
 		public MainPageViewModel(Environment env) :
 			this(env, Configuration.AppServerAddress, Configuration.OpenIdAuthority)
@@ -104,7 +107,7 @@ namespace MobileClient.ViewModels
 
 		public MainPageViewModel(Environment env, string appServerAddress, string openIdAuthority)
 		{
-			this.offlineStorageBasePath = env.DataBasePath;
+			this.OfflineStorageBasePath = env.DataBasePath;
 			this.appServerAddress = appServerAddress;
 			this.openIdAuthority = openIdAuthority;
 		}
@@ -136,7 +139,7 @@ namespace MobileClient.ViewModels
 
 		public async Task DoLogin(string login, string password)
 		{
-			ApiClient = await SynchronizingApiClient.Create(offlineStorageBasePath, new ConnectionSettings(login, password)
+			ApiClient = await SynchronizingApiClient.Create(OfflineStorageBasePath, new ConnectionSettings(login, password)
 			{
 				ApiUrl = Configuration.AppServerAddress,
 				OpenIdUrl = Configuration.OpenIdAuthority
@@ -148,9 +151,25 @@ namespace MobileClient.ViewModels
 			}
 		}
 
+		public string PreviousLogin()
+		{
+			try
+			{
+				var userIdentity = JsonConvert.DeserializeObject<UserIdentity>(
+					File.ReadAllText(Path.Combine(OfflineStorageBasePath, "user.json")));
+				return userIdentity.Login;
+			}
+			catch(FileNotFoundException)
+			{
+				return "";
+			}
+		}
+
 		public async Task Synchronize()
 		{
-			(ApiClient as SynchronizingApiClient)?.Synchronize();
+			var syncTask = (ApiClient as SynchronizingApiClient)?.Synchronize();
+			if(syncTask != null)
+				await syncTask;
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{
