@@ -74,7 +74,7 @@ namespace ApiClientLib
 			return Task.FromResult(r);
 		}
 
-		public static Task<IApiClient> Create(string login, string password, string apiAddress, string openIdAddress)
+		public static Task<IApiClient> Create(ConnectionSettings conn)
 		{
 			IApiClient r = new MockApiClient();
 			return Task.FromResult(r);

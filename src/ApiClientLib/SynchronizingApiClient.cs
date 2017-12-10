@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace ApiClientLib
 {
-	public class OfflineApiClient : IApiClient
+	public class SynchronizingApiClient : IApiClient
 	{
 		private enum ServerState
 		{
@@ -43,7 +43,7 @@ namespace ApiClientLib
 		private static readonly string productsFilenameComponent = "products.json";
 		public string offlineStoragePathBase;
 
-		private OfflineApiClient()
+		private SynchronizingApiClient()
 		{
 
 		}
@@ -178,30 +178,14 @@ namespace ApiClientLib
 			Save();
 		}
 
-		public static Task<OfflineApiClient> Create(
+		public static Task<SynchronizingApiClient> Create(
 			string offlineStoragePathBase,
-			string login,
-			string password)
+			ConnectionSettings conn)
 		{
-			return Create(
-				offlineStoragePathBase,
-				login,
-				password,
-				ApiDefaultConfig.defaultApiAddress,
-				ApiDefaultConfig.defaultOpenIdAddress);
-		}
-
-		public static Task<OfflineApiClient> Create(
-			string offlineStoragePathBase,
-			string login,
-			string password,
-			string apiAddress,
-			string openIdAddress)
-		{
-			var client = new OfflineApiClient
+			var client = new SynchronizingApiClient
 			{
 				offlineStoragePathBase = offlineStoragePathBase,
-				createOnlineClient = () => ApiClient.Create(login, password, apiAddress, openIdAddress),
+				createOnlineClient = () => ApiClient.Create(conn),
 				deltas = LoadDeltas(offlineStoragePathBase),
 				products = LoadProducts(offlineStoragePathBase)
 			};

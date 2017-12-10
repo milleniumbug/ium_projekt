@@ -136,7 +136,11 @@ namespace MobileClient.ViewModels
 
 		public async Task DoLogin(string login, string password)
 		{
-			ApiClient = await ApiClientLib.OfflineApiClient.Create(offlineStorageBasePath, login, password, appServerAddress, openIdAuthority);
+			ApiClient = await SynchronizingApiClient.Create(offlineStorageBasePath, new ConnectionSettings(login, password)
+			{
+				ApiUrl = Configuration.AppServerAddress,
+				OpenIdUrl = Configuration.OpenIdAuthority
+			});
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{
@@ -146,7 +150,7 @@ namespace MobileClient.ViewModels
 
 		public async Task Synchronize()
 		{
-			(ApiClient as OfflineApiClient)?.Synchronize();
+			(ApiClient as SynchronizingApiClient)?.Synchronize();
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{
@@ -156,7 +160,7 @@ namespace MobileClient.ViewModels
 
 		public void Save()
 		{
-			(ApiClient as OfflineApiClient)?.Save();
+			(ApiClient as SynchronizingApiClient)?.Save();
 		}
 
 		public async void AddProduct()

@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Api.Models;
+using ApiClientLib;
 using IdentityModel.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +21,9 @@ namespace ConsoleClient
 
 		private static async Task MainAsync()
 		{
-			using(var client = await ApiClientLib.OfflineApiClient.Create(Environment.CurrentDirectory, "brockallen@gmail.com", "Pass123$"))
+			using(var client = await SynchronizingApiClient.Create(
+				Environment.CurrentDirectory,
+				new ConnectionSettings("brockallen@gmail.com", "Pass123$")))
 			{
 				var p1 = await client.Add(new Product
 				{

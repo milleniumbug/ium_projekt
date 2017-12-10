@@ -94,17 +94,11 @@ namespace ApiClientLib
 			}
 		}
 
-		public static Task<IApiClient> Create(string login, string password)
-		{
-			return Create(login, password, ApiDefaultConfig.defaultApiAddress, ApiDefaultConfig.defaultOpenIdAddress);
-		}
-
-		public static async Task<IApiClient> Create(string login, string password, string apiAddress,
-			string openIdAddress)
+		public static async Task<IApiClient> Create(ConnectionSettings conn)
 		{
 			var client = new ApiClient();
 
-			var discoveryClient = new DiscoveryClient(openIdAddress);
+			var discoveryClient = new DiscoveryClient(conn.OpenIdUrl);
 			var disco = await discoveryClient.GetAsync();
 			if(disco.IsError)
 			{
@@ -113,7 +107,7 @@ namespace ApiClientLib
 
 			// request token
 			var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
-			var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(login, password, "api1");
+			var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(conn.Login, conn.Password, "api1");
 
 			if(tokenResponse.IsError)
 			{
@@ -124,8 +118,8 @@ namespace ApiClientLib
 			httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
 
 			client.client = httpClient;
-			client.apiAddress = apiAddress;
-			client.openIdAddress = openIdAddress;
+			client.apiAddress = conn.ApiUrl;
+			client.openIdAddress = conn.OpenIdUrl;
 			return client;
 		}
 
