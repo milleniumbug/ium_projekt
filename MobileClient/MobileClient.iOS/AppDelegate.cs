@@ -23,7 +23,8 @@ namespace MobileClient.iOS
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init ();
-			LoadApplication (new MobileClient.App ());
+			var env = new Environment(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal));
+			LoadApplication (new MobileClient.App(env));
 
 			return base.FinishedLaunching (app, options);
 		}

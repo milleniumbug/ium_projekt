@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Configuration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\BoolToLoggedInConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ProductToStringConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Environment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

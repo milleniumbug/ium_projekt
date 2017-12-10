@@ -11,12 +11,15 @@ namespace MobileClient
 {
 	public partial class MainPage : ContentPage
 	{
-		private MainPageViewModel vm;
+		public static MainPageViewModel BindingContextDummyInstance => null;
 
-		public MainPage()
+		private readonly MainPageViewModel vm;
+
+		public MainPage(MainPageViewModel vm)
 		{
+			this.vm = vm;
 			InitializeComponent();
-			vm = (MainPageViewModel) BindingContext;
+			BindingContext = vm;
 		}
 
 		private void LoginButtonClicked(object sender, EventArgs e)
@@ -46,6 +49,11 @@ namespace MobileClient
 		private void DecreaseProduct(object sender, EventArgs e)
 		{
 			vm.DecreaseProduct();
+		}
+
+		private async void Synchronize(object sender, EventArgs e)
+		{
+			await vm.Synchronize();
 		}
 	}
 }

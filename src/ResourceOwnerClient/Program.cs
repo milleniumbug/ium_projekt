@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,27 +20,31 @@ namespace ConsoleClient
 
 		private static async Task MainAsync()
 		{
-			var client = await ApiClientLib.ApiClient.Create("brockallen@gmail.com", "Pass123$");
-			var p1 = await client.Add(new Product
+			using(var client = await ApiClientLib.OfflineApiClient.Create(Environment.CurrentDirectory, "brockallen@gmail.com", "Pass123$"))
 			{
-				Amount = 0,
-				Name = "Mleko",
-				ShopName = "Kerfur",
-				Price = 2.5M
-			});
-			var p2 = await client.Add(new Product
-			{
-				Amount = 0,
-				Name = "Kartofle",
-				ShopName = "Biedronka",
-				Price = 1.5M
-			});
-			await client.IncreaseAmount(p2, 4);
-			await client.Delete(p1);
-			var products = await client.GetAll();
-			foreach(var p in products)
-			{
-				Console.WriteLine(p);
+				var p1 = await client.Add(new Product
+				{
+					Amount = 0,
+					Name = "Mleko",
+					ShopName = "Kerfur",
+					Price = 2.5M
+				});
+
+				var p2 = await client.Add(new Product
+				{
+					Amount = 0,
+					Name = "Kartofle",
+					ShopName = "Biedronka",
+					Price = 1.5M
+				});
+				await client.IncreaseAmount(p2, 4);
+				await client.Delete(p1);
+				var products = await client.GetAll();
+				foreach(var p in products)
+				{
+					Console.WriteLine(p);
+				}
+				await client.Synchronize();
 			}
 		}
 	}

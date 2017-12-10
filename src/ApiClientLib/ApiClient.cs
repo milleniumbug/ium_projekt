@@ -12,10 +12,6 @@ namespace ApiClientLib
 {
 	public class ApiClient : IApiClient
 	{
-		private static readonly string defaultOpenIdAddress = "http://localhost:5000";
-
-		private static readonly string defaultApiAddress = "http://localhost:5001";
-
 		private HttpClient client;
 
 		private string openIdAddress;
@@ -83,7 +79,11 @@ namespace ApiClientLib
 				}),
 				Encoding.UTF8,
 				"application/json"));
-			if(!response.IsSuccessStatusCode)
+			if(response.StatusCode == HttpStatusCode.NotFound)
+			{
+				throw new ElementNotFound($"{response.StatusCode}");
+			}
+			else if(!response.IsSuccessStatusCode)
 			{
 				throw new ConnectionErrorException($"{response.StatusCode}");
 			}
@@ -96,10 +96,11 @@ namespace ApiClientLib
 
 		public static Task<IApiClient> Create(string login, string password)
 		{
-			return Create(login, password, defaultApiAddress, defaultOpenIdAddress);
+			return Create(login, password, ApiDefaultConfig.defaultApiAddress, ApiDefaultConfig.defaultOpenIdAddress);
 		}
 
-		public static async Task<IApiClient> Create(string login, string password, string apiAddress, string openIdAddress)
+		public static async Task<IApiClient> Create(string login, string password, string apiAddress,
+			string openIdAddress)
 		{
 			var client = new ApiClient();
 
@@ -126,6 +127,12 @@ namespace ApiClientLib
 			client.apiAddress = apiAddress;
 			client.openIdAddress = openIdAddress;
 			return client;
+		}
+
+		/// <inheritdoc />
+		public void Dispose()
+		{
+			client?.Dispose();
 		}
 	}
 }

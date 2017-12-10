@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Models;
 
 namespace ApiClientLib
 {
-	public interface IApiClient
+	public interface IApiClient : IDisposable
 	{
 		Task<IEnumerable<Product>> GetAll();
 		Task<Product> Add(Product product);

@@ -5,10 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:converters="clr-namespace:MobileClient.Converters;assembly=MobileClient.Android"
     xmlns:local="clr-namespace:MobileClient"
-    xmlns:viewModels="clr-namespace:MobileClient.ViewModels;assembly=MobileClient.Android">
-    <ContentPage.BindingContext>
-        <viewModels:MainPageViewModel />
-    </ContentPage.BindingContext>
+    BindingContext="{x:Static local:MainPage.BindingContextDummyInstance}">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -17,10 +14,20 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Button
-                Grid.Row="0"
-                Clicked="LoginButtonClicked"
-                Text="{Binding IsLoggedIn, Converter={x:Static converters:BoolToLoggedInConverter.Default}}" />
+            <Grid Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Clicked="LoginButtonClicked"
+                    Text="{Binding IsLoggedIn, Converter={x:Static converters:BoolToLoggedInConverter.Default}}" />
+                <Button
+                    Grid.Column="1"
+                    Clicked="Synchronize"
+                    Text="Sync" />
+            </Grid>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />

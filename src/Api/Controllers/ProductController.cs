@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Security.Claims;
 using Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
 	[Route("products")]
+	[Authorize]
 	public class ProductController : Controller
 	{
 		private readonly AppDbContext db;

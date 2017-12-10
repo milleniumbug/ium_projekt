@@ -79,5 +79,10 @@ namespace ApiClientLib
 			IApiClient r = new MockApiClient();
 			return Task.FromResult(r);
 		}
+
+		/// <inheritdoc />
+		public void Dispose()
+		{
+		}
 	}
 }

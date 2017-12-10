@@ -21,4 +21,23 @@ namespace ApiClientLib
 		{
 		}
 	}
+
+	public class ElementNotFound : ConnectionErrorException
+	{
+		public ElementNotFound()
+		{
+		}
+
+		public ElementNotFound(string message) : base(message)
+		{
+		}
+
+		public ElementNotFound(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+
+		protected ElementNotFound(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
+	}
 }

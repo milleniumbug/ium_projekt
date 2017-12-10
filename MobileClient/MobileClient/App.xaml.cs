@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using MobileClient.ViewModels;
 using Xamarin.Forms;
 
 namespace MobileClient
 {
 	public partial class App : Application
 	{
-		public App ()
+		public App (Environment env)
 		{
 			InitializeComponent();
 
-			MainPage = new MobileClient.MainPage();
+			MainPage = new MobileClient.MainPage(new MainPageViewModel(env));
 		}
 
 		protected override void OnStart ()
@@ -23,7 +23,8 @@ namespace MobileClient
 
 		protected override void OnSleep ()
 		{
-			// Handle when your app sleeps
+			var vm = (MainPageViewModel)MainPage.BindingContext;
+			vm.Save();
 		}
 
 		protected override void OnResume ()

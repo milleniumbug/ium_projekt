@@ -20,7 +20,9 @@ namespace MobileClient.Droid
 			base.OnCreate (bundle);
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
-			LoadApplication (new MobileClient.App ());
+			var dataPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+			var env = new Environment(dataPath);
+			LoadApplication (new MobileClient.App(env));
 		}
 	}
 }

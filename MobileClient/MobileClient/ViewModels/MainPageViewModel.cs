@@ -12,7 +12,7 @@ using Xamarin.Forms;
 
 namespace MobileClient.ViewModels
 {
-	class MainPageViewModel : INotifyPropertyChanged
+	public class MainPageViewModel : INotifyPropertyChanged
 	{
 		private Product selectedProduct;
 
@@ -94,15 +94,17 @@ namespace MobileClient.ViewModels
 		}
 
 		private IApiClient apiClient;
+		private readonly string offlineStorageBasePath;
 
-		public MainPageViewModel() :
-			this(Configuration.AppServerAddress, Configuration.OpenIdAuthority)
+		public MainPageViewModel(Environment env) :
+			this(env, Configuration.AppServerAddress, Configuration.OpenIdAuthority)
 		{
 			
 		}
 
-		public MainPageViewModel(string appServerAddress, string openIdAuthority)
+		public MainPageViewModel(Environment env, string appServerAddress, string openIdAuthority)
 		{
+			this.offlineStorageBasePath = env.DataBasePath;
 			this.appServerAddress = appServerAddress;
 			this.openIdAuthority = openIdAuthority;
 		}
@@ -134,12 +136,27 @@ namespace MobileClient.ViewModels
 
 		public async Task DoLogin(string login, string password)
 		{
-			apiClient = await ApiClientLib.ApiClient.Create(login, password, appServerAddress, openIdAuthority);
+			ApiClient = await ApiClientLib.OfflineApiClient.Create(offlineStorageBasePath, login, password, appServerAddress, openIdAuthority);
 			Products.Clear();
 			foreach(var product in await apiClient.GetAll())
 			{
 				Products.Add(product);
 			}
+		}
+
+		public async Task Synchronize()
+		{
+			(ApiClient as OfflineApiClient)?.Synchronize();
+			Products.Clear();
+			foreach(var product in await apiClient.GetAll())
+			{
+				Products.Add(product);
+			}
+		}
+
+		public void Save()
+		{
+			(ApiClient as OfflineApiClient)?.Save();
 		}
 
 		public async void AddProduct()
