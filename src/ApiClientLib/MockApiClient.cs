@@ -7,27 +7,14 @@ namespace ApiClientLib
 {
 	public class MockApiClient : IApiClient
 	{
-		private List<Product> l = new List<Product>
-		{
-			new Product
-			{
-				Amount = 42,
-				Id = 2,
-				Name = "Snikers",
-				Price = 1.60M,
-				ShopName = "LIDL"
-			},
-			new Product
-			{
-				Amount = 0,
-				Id = 3,
-				Name = "Rzodkiewki",
-				Price = 2.0M,
-				ShopName = "Monopolowy za rogiem"
-			}
-		};
+		private List<Product> l;
 
 		private int idCounter = 42;
+
+		private MockApiClient(IEnumerable<Product> products)
+		{
+			l = new List<Product>(products);
+		}
 
 		/// <inheritdoc />
 		public Task<IEnumerable<Product>> GetAll()
@@ -68,15 +55,14 @@ namespace ApiClientLib
 			return Task.FromResult(new Product(p));
 		}
 
-		public static Task<IApiClient> Create(string login, string password)
-		{
-			IApiClient r = new MockApiClient();;
-			return Task.FromResult(r);
-		}
-
 		public static Task<IApiClient> Create(ConnectionSettings conn)
 		{
-			IApiClient r = new MockApiClient();
+			return Create(conn, Enumerable.Empty<Product>());
+		}
+
+		public static Task<IApiClient> Create(ConnectionSettings conn, IEnumerable<Product> products)
+		{
+			IApiClient r = new MockApiClient(products);
 			return Task.FromResult(r);
 		}
 
