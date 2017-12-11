@@ -48,6 +48,12 @@ namespace ConsoleClient
 					Console.WriteLine(p);
 				}
 				await client.Synchronize();
+				Console.WriteLine("Po synchronizacji:");
+				products = await client.GetAll();
+				foreach(var p in products)
+				{
+					Console.WriteLine(p);
+				}
 			}
 		}
 	}

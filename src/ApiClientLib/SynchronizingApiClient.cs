@@ -85,10 +85,7 @@ namespace ApiClientLib
 		/// <inheritdoc />
 		public Task Delete(Product product)
 		{
-			var state = products[product.Id].State;
 			products.Remove(product.Id);
-			if(state == ServerState.NonExisting)
-				return Task.FromResult(0);
 			deltas.Enqueue(new DeltaDelete(product));
 			return Task.FromResult(0);
 		}
