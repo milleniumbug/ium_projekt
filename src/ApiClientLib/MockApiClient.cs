@@ -63,14 +63,14 @@ namespace ApiClientLib
 			return Task.FromResult(new Product(p));
 		}
 
-		public static Task<IApiClient> Create(ConnectionSettings conn)
+		public static Task<IApiClient2> Create(ConnectionSettings conn)
 		{
 			return Create(conn, Enumerable.Empty<Product>());
 		}
 
-		public static Task<IApiClient> Create(ConnectionSettings conn, IEnumerable<Product> products)
+		public static Task<IApiClient2> Create(ConnectionSettings conn, IEnumerable<Product> products)
 		{
-			IApiClient r = new MockApiClient(products);
+			IApiClient2 r = new MockApiClient(products);
 			return Task.FromResult(r);
 		}
 

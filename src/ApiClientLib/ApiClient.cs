@@ -96,7 +96,7 @@ namespace ApiClientLib
 			}
 		}
 
-		public static async Task<IApiClient> Create(ConnectionSettings conn)
+		public static async Task<IApiClient2> Create(ConnectionSettings conn)
 		{
 			var client = new ApiClient();
 
