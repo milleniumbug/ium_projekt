@@ -117,9 +117,6 @@
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Functional.Maybe, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Functional.Maybe.1.1.1\lib\portable40-net40+win8\Functional.Maybe.dll</HintPath>
-    </Reference>
     <Reference Include="IdentityModel, Version=2.15.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\IdentityModel.2.15.0\lib\netstandard2.0\IdentityModel.dll</HintPath>
     </Reference>
