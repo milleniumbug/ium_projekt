@@ -16,5 +16,7 @@ namespace Api
 		}
 
 		public DbSet<UserProduct> Products { get; set; }
+
+		public DbSet<Delta> Deltas { get; set; }
 	}
 }

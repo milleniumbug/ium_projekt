@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Api.Models;
 
 namespace ApiClientLib.Deltas
@@ -7,11 +8,17 @@ namespace ApiClientLib.Deltas
 	{
 		public int HowMuch { get; }
 
-		public DeltaAmountChange(Product product, int howMuch)
+		public DeltaAmountChange(Product product, int howMuch, Guid? requestId = null)
 		{
 			this.Product = new Product(product);
 			this.HowMuch = howMuch;
+			if(requestId == null)
+				requestId = Guid.NewGuid();
+			RequestId = requestId.Value;
 		}
+
+		/// <inheritdoc />
+		public Guid RequestId { get; }
 
 		/// <inheritdoc />
 		public void RebindId(long id)

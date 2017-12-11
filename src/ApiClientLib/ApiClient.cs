@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Api.Models;
+using Functional.Maybe;
 using IdentityModel.Client;
 using Newtonsoft.Json;
 
 namespace ApiClientLib
 {
-	public class ApiClient : IApiClient
+	public class ApiClient : IApiClient2
 	{
 		private HttpClient client;
 
@@ -127,6 +129,83 @@ namespace ApiClientLib
 		public void Dispose()
 		{
 			client?.Dispose();
+		}
+
+		/// <inheritdoc />
+		public async Task<Maybe<Product>> Add(Product product, Guid requestId)
+		{
+			var response = await client.PostAsync($"{apiAddress}/products?deltaGuid={requestId}", new StringContent(
+				JsonConvert.SerializeObject(product),
+				Encoding.UTF8,
+				"application/json"));
+			if(response.StatusCode == HttpStatusCode.Conflict)
+			{
+				return Maybe<Product>.Nothing;
+			}
+			else if(!response.IsSuccessStatusCode)
+			{
+				throw new ConnectionErrorException($"{response.StatusCode}");
+			}
+			else
+			{
+				var content = await response.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<Product>(content).ToMaybe();
+			}
+		}
+
+		/// <inheritdoc />
+		public async Task Delete(Product product, Guid requestId)
+		{
+			var response = await client.DeleteAsync($"{apiAddress}/products/{product.Id}?deltaGuid={requestId}");
+			if(!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotFound)
+			{
+				throw new ConnectionErrorException($"{response.StatusCode}");
+			}
+		}
+
+		/// <inheritdoc />
+		public Task<Maybe<Product>> IncreaseAmount(Product product, int howMuch, Guid requestId)
+		{
+			return ChangeAmount(product, howMuch, ProductPatch.OperationType.Increase, requestId);
+		}
+
+		/// <inheritdoc />
+		public Task<Maybe<Product>> DecreaseAmount(Product product, int howMuch, Guid requestId)
+		{
+			return ChangeAmount(product, howMuch, ProductPatch.OperationType.Decrease, requestId);
+		}
+
+		private async Task<Maybe<Product>> ChangeAmount(Product product, int howMuch, ProductPatch.OperationType type, Guid requestId)
+		{
+			var response = await client.PatchAsync($"{apiAddress}/products/{product.Id}?deltaGuid={requestId}", new StringContent(
+				JsonConvert.SerializeObject(new List<ProductPatch>
+				{
+					new ProductPatch
+					{
+						Operation = type,
+						What = ProductPatch.TargetField.Amount,
+						Value = howMuch
+					}
+				}),
+				Encoding.UTF8,
+				"application/json"));
+			if(response.StatusCode == HttpStatusCode.Conflict)
+			{
+				return Maybe<Product>.Nothing;
+			}
+			else if(response.StatusCode == HttpStatusCode.NotFound)
+			{
+				throw new ElementNotFound($"{response.StatusCode}");
+			}
+			else if(!response.IsSuccessStatusCode)
+			{
+				throw new ConnectionErrorException($"{response.StatusCode}");
+			}
+			else
+			{
+				var content = await response.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<Product>(content).ToMaybe();
+			}
 		}
 	}
 }

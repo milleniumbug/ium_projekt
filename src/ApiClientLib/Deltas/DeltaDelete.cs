@@ -1,14 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Api.Models;
 
 namespace ApiClientLib.Deltas
 {
 	internal class DeltaDelete : IDelta
 	{
-		public DeltaDelete(Product product)
+		public DeltaDelete(Product product, Guid? requestId = null)
 		{
 			this.Product = new Product(product);
+			if(requestId == null)
+				requestId = Guid.NewGuid();
+			RequestId = requestId.Value;
 		}
+
+		/// <inheritdoc />
+		public Guid RequestId { get; }
 
 		/// <inheritdoc />
 		public void RebindId(long id)

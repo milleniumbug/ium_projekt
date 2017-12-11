@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using Api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +14,11 @@ namespace Api.Controllers
 	public class ProductController : Controller
 	{
 		private readonly AppDbContext db;
+
+		private bool IsAlreadyApplied(Guid id)
+		{
+			return db.Deltas.FirstOrDefault(delta => delta.Id == id) != null;
+		}
 
 		private string GetUserId(ClaimsPrincipal user)
 		{
@@ -46,12 +53,15 @@ namespace Api.Controllers
 
 		// POST api/products
 		[HttpPost]
-		public IActionResult Post([FromBody]Product inputProduct)
+		public IActionResult Post([FromBody]Product inputProduct, Guid? deltaGuid = null)
 		{
 			if(inputProduct == null)
 			{
 				return BadRequest();
 			}
+
+			if(deltaGuid != null && IsAlreadyApplied(deltaGuid.Value))
+				return StatusCode((int)HttpStatusCode.Conflict);
 
 			var userId = GetUserId(User);
 			var ent = db.Products.Add(new UserProduct
@@ -62,6 +72,15 @@ namespace Api.Controllers
 				ShopName = inputProduct.ShopName,
 				Name = inputProduct.Name
 			});
+			if(deltaGuid != null)
+			{
+				db.Deltas.Add(new Delta
+				{
+					ApplicationTime = DateTime.UtcNow,
+					Id = deltaGuid.Value
+				});
+			}
+
 			db.SaveChanges();
 
 			return CreatedAtRoute(nameof(GetById), new { id = ent.Entity.Id }, new Product(ent.Entity));
@@ -69,7 +88,7 @@ namespace Api.Controllers
 
 		// PATCH api/products
 		[HttpPatch("{id}")]
-		public IActionResult Patch(long id, [FromBody]IEnumerable<ProductPatch> patches)
+		public IActionResult Patch(long id, [FromBody]IEnumerable<ProductPatch> patches, Guid? deltaGuid = null)
 		{
 			if(patches == null)
 			{
@@ -82,6 +101,9 @@ namespace Api.Controllers
 			{
 				return NotFound();
 			}
+
+			if(deltaGuid != null && IsAlreadyApplied(deltaGuid.Value))
+				return StatusCode((int)HttpStatusCode.Conflict);
 
 			foreach(var patch in patches)
 			{
@@ -101,6 +123,14 @@ namespace Api.Controllers
 			}
 
 			db.Products.Update(product);
+			if(deltaGuid != null)
+			{
+				db.Deltas.Add(new Delta
+				{
+					ApplicationTime = DateTime.UtcNow,
+					Id = deltaGuid.Value
+				});
+			}
 			db.SaveChanges();
 
 			return Ok(new Product(product));
@@ -108,15 +138,27 @@ namespace Api.Controllers
 
 		// DELETE api/products/5
 		[HttpDelete("{id}")]
-		public IActionResult Delete(int id)
+		public IActionResult Delete(int id, Guid? deltaGuid = null)
 		{
 			var userId = GetUserId(User);
 			var product = db.Products.Where(p => p.User == userId).FirstOrDefault(p => p.Id == id);
+
 			if(product == null)
 			{
 				return NotFound();
 			}
+			if(deltaGuid != null && IsAlreadyApplied(deltaGuid.Value))
+				return NotFound();
+
 			db.Products.Remove(product);
+			if(deltaGuid != null)
+			{
+				db.Deltas.Add(new Delta
+				{
+					ApplicationTime = DateTime.UtcNow,
+					Id = deltaGuid.Value
+				});
+			}
 			db.SaveChanges();
 
 			return NoContent();

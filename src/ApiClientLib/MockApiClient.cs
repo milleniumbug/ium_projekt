@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Models;
+using Functional.Maybe;
 
 namespace ApiClientLib
 {
-	public class MockApiClient : IApiClient
+	public class MockApiClient : IApiClient2
 	{
 		private List<Product> l;
+
+		private HashSet<Guid> processedRequests = new HashSet<Guid>();
 
 		private int idCounter = 42;
 
@@ -73,6 +77,45 @@ namespace ApiClientLib
 		/// <inheritdoc />
 		public void Dispose()
 		{
+		}
+
+		/// <inheritdoc />
+		public async Task<Maybe<Product>> Add(Product product, Guid requestId)
+		{
+			if(processedRequests.Contains(requestId))
+				return Maybe<Product>.Nothing;
+			var p = await Add(product);
+			processedRequests.Add(requestId);
+			return p.ToMaybe();
+		}
+
+		/// <inheritdoc />
+		public async Task Delete(Product product, Guid requestId)
+		{
+			processedRequests.Add(requestId);
+			await Delete(product);
+		}
+
+		/// <inheritdoc />
+		public async Task<Maybe<Product>> IncreaseAmount(Product product, int howMuch, Guid requestId)
+		{
+			if(processedRequests.Contains(requestId))
+				return Maybe<Product>.Nothing;
+
+			var p = await IncreaseAmount(product, howMuch);
+			processedRequests.Add(requestId);
+			return p.ToMaybe();
+		}
+
+		/// <inheritdoc />
+		public async Task<Maybe<Product>> DecreaseAmount(Product product, int howMuch, Guid requestId)
+		{
+			if(processedRequests.Contains(requestId))
+				return Maybe<Product>.Nothing;
+
+			var p = await DecreaseAmount(product, howMuch);
+			processedRequests.Add(requestId);
+			return p.ToMaybe();
 		}
 	}
 }
