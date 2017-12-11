@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +11,7 @@ using NUnit.Framework;
 namespace Tests
 {
 	[TestFixture]
-	public class SynchronizingClient
+	class FaultTolerance
 	{
 		private static readonly Product p1 = new Product
 		{
@@ -22,7 +21,23 @@ namespace Tests
 			ShopName = "Biedra"
 		};
 
-		private IApiClient2 onlineClient;
+		private async Task RetryUntilSucceeds(Func<Task> action)
+		{
+			while(true)
+			{
+				try
+				{
+					await action();
+					return;
+				}
+				catch(ConnectionErrorException)
+				{
+					// ignored
+				}
+			}
+		}
+
+		private FailureInducingMockApiClient onlineClient;
 
 		private SynchronizingApiClient offlineClient;
 
@@ -37,15 +52,17 @@ namespace Tests
 			var conn = new ConnectionSettings("dummy", "dummy");
 			SynchronizingApiClient.InvalidateLocalStorage(first);
 			SynchronizingApiClient.InvalidateLocalStorage(second);
-			onlineClient = await MockApiClient.Create(conn);
+			onlineClient = new FailureInducingMockApiClient(
+				await MockApiClient.Create(conn),
+				new Random(42));
 			offlineClient = await SynchronizingApiClient.Create(
 				first,
 				conn,
-				() => Task.FromResult(onlineClient));
+				() => Task.FromResult<IApiClient2>(onlineClient));
 			offlineClient2 = await SynchronizingApiClient.Create(
 				second,
 				conn,
-				() => Task.FromResult(onlineClient));
+				() => Task.FromResult<IApiClient2>(onlineClient));
 		}
 
 		[TearDown]
@@ -60,7 +77,9 @@ namespace Tests
 		public async Task BasicNoClientState()
 		{
 			await onlineClient.Add(p1);
-			await offlineClient.Synchronize();
+			onlineClient.FaultProbability = 0.6;
+			await RetryUntilSucceeds(async () => await offlineClient.Synchronize());
+			onlineClient.FaultProbability = 0.0;
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient);
 		}
 
@@ -68,7 +87,9 @@ namespace Tests
 		public async Task BasicNoServerState()
 		{
 			await offlineClient.Add(p1);
-			await offlineClient.Synchronize();
+			onlineClient.FaultProbability = 0.6;
+			await RetryUntilSucceeds(async () => await offlineClient.Synchronize());
+			onlineClient.FaultProbability = 0.0;
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient);
 		}
 
@@ -82,8 +103,10 @@ namespace Tests
 			await offlineClient.Delete(pcl1);
 			var pcl2 = (await offlineClient2.GetAll()).First();
 			await offlineClient2.IncreaseAmount(pcl2, 5);
-			await offlineClient.Synchronize();
-			await offlineClient2.Synchronize();
+			onlineClient.FaultProbability = 0.6;
+			await RetryUntilSucceeds(async () => await offlineClient.Synchronize());
+			await RetryUntilSucceeds(async () => await offlineClient2.Synchronize());
+			onlineClient.FaultProbability = 0.0;
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient);
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient2);
 			await ApiClientAssert.AssertEqualContent(offlineClient, offlineClient2);
@@ -99,8 +122,10 @@ namespace Tests
 			await offlineClient.IncreaseAmount(pcl1, 5);
 			var pcl2 = (await offlineClient2.GetAll()).First();
 			await offlineClient2.IncreaseAmount(pcl2, 5);
-			await offlineClient.Synchronize();
-			await offlineClient2.Synchronize();
+			onlineClient.FaultProbability = 0.6;
+			await RetryUntilSucceeds(async () => await offlineClient.Synchronize());
+			await RetryUntilSucceeds(async () => await offlineClient2.Synchronize());
+			onlineClient.FaultProbability = 0.0;
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient);
 			await ApiClientAssert.AssertEqualContent(onlineClient, offlineClient2);
 			await ApiClientAssert.AssertEqualContent(offlineClient, offlineClient2);

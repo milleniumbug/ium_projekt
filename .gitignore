@@ -259,3 +259,14 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# custom
+src/ResourceOwnerClient/deltas.json
+src/ResourceOwnerClient/products.json
+src/ResourceOwnerClient/user.json
+
+# prevent adding the hostname to the repo
+MobileClient/MobileClient/Configuration.cs
+src/Api/appsettings.json
+src/ApiClientLib/ApiDefaultConfig.cs
+src/IdentityServerWithAspNetIdentity/appsettings.json

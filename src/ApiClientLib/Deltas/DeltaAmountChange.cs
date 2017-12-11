@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Api.Models;
+using Functional.Maybe;
 
 namespace ApiClientLib.Deltas
 {
@@ -30,13 +31,14 @@ namespace ApiClientLib.Deltas
 		public Product Product { get; }
 
 		/// <inheritdoc />
-		public async Task<long> Apply(IApiClient client)
+		public async Task<Maybe<long>> Apply(IApiClient2 client)
 		{
+			Maybe<Product> result;
 			if(HowMuch > 0)
-				await client.IncreaseAmount(Product, HowMuch);
+				result = await client.IncreaseAmount(Product, HowMuch, RequestId);
 			else
-				await client.DecreaseAmount(Product, -HowMuch);
-			return Product.Id;
+				result = await client.DecreaseAmount(Product, -HowMuch, RequestId);
+			return result.Select(p => p.Id);
 		}
 	}
 }

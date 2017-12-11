@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Api.Models;
-using Newtonsoft.Json.Linq;
+using Functional.Maybe;
 
 namespace ApiClientLib.Deltas
 {
@@ -28,10 +28,10 @@ namespace ApiClientLib.Deltas
 	    public Product Product { get; }
 
 	    /// <inheritdoc />
-	    public async Task<long> Apply(IApiClient client)
+	    public async Task<Maybe<long>> Apply(IApiClient2 client)
 	    {
-		    var p = await client.Add(Product);
-		    return p.Id;
+		    var product = await client.Add(Product, RequestId);
+		    return product.Select(p => p.Id);
 	    }
     }
 }

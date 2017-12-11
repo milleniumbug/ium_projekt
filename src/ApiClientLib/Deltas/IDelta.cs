@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Api.Models;
+using Functional.Maybe;
 
 namespace ApiClientLib.Deltas
 {
@@ -9,6 +10,6 @@ namespace ApiClientLib.Deltas
 		Guid RequestId { get; }
 		void RebindId(long id);
 		Product Product { get; }
-		Task<long> Apply(IApiClient client);
+		Task<Maybe<long>> Apply(IApiClient2 client);
 	}
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Api.Models;
 using ApiClientLib.Deltas;
+using Functional.Maybe;
 using Newtonsoft.Json;
 
 namespace ApiClientLib
@@ -33,7 +34,7 @@ namespace ApiClientLib
 
 		private long localId;
 
-		private Func<Task<IApiClient>> createOnlineClient;
+		private Func<Task<IApiClient2>> createOnlineClient;
 
 		private Dictionary<long, ClientProduct> products;
 
@@ -140,9 +141,12 @@ namespace ApiClientLib
 						{
 							UpdateDelta(delta);
 							long oldId = delta.Product.Id;
-							long newId = await delta.Apply(onlineClient);
-							if(oldId != newId)
-								idMappings.Add(oldId, newId);
+							Maybe<long> maybeNewId = await delta.Apply(onlineClient);
+							maybeNewId.Do(newId =>
+							{
+								if(oldId != newId)
+									idMappings.Add(oldId, newId);
+							});
 						}
 						catch(ElementNotFound)
 						{
@@ -191,7 +195,7 @@ namespace ApiClientLib
 			return Create(offlineStoragePathBase, conn, () => ApiClient.Create(conn));
 		}
 
-		public static Task<SynchronizingApiClient> Create(string offlineStoragePathBase, ConnectionSettings conn, Func<Task<IApiClient>> onlineClientFactory)
+		public static Task<SynchronizingApiClient> Create(string offlineStoragePathBase, ConnectionSettings conn, Func<Task<IApiClient2>> onlineClientFactory)
 		{
 			if(!IsLocalStorageValid(offlineStoragePathBase, conn))
 			{

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Api.Models;
+using Functional.Maybe;
 
 namespace ApiClientLib.Deltas
 {
@@ -27,10 +28,10 @@ namespace ApiClientLib.Deltas
 		public Product Product { get; }
 
 		/// <inheritdoc />
-		public async Task<long> Apply(IApiClient client)
+		public async Task<Maybe<long>> Apply(IApiClient2 client)
 		{
 			await client.Delete(Product);
-			return Product.Id;
+			return Product.Id.ToMaybe();
 		}
 	}
 }
